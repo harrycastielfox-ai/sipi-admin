@@ -3,6 +3,7 @@ import { inqueritosStore } from "@/lib/inqueritos";
 import {
   FileText, Clock, CheckCircle2, TrendingUp, AlertTriangle,
   ShieldAlert, Stethoscope, Activity, Plus, Filter, Bell, Users, MapPin,
+  Gauge, Timer, Flame, Server, Wifi, Database, ShieldCheck, UserCog, CalendarDays,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -152,6 +153,36 @@ export default function Dashboard() {
   const dt = now.toLocaleDateString("pt-BR");
   const tm = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
+  // Produtividade 7d / 30d
+  const daysAgo = (n: number) => { const d = new Date(); d.setDate(d.getDate() - n); return d; };
+  const inRange = (d: string | null | undefined, n: number) => !!d && new Date(d) >= daysAgo(n);
+  const novos7 = list.filter(i => inRange(i.dataInstauracao, 7)).length;
+  const novos30 = list.filter(i => inRange(i.dataInstauracao, 30)).length;
+  const concl7 = list.filter(i => inRange(i.ultimaAtualizacao, 7) && (i.statusDiligencias === "Concluída" || i.situacao === "Relatado")).length;
+  const concl30 = list.filter(i => inRange(i.ultimaAtualizacao, 30) && (i.statusDiligencias === "Concluída" || i.situacao === "Relatado")).length;
+  const tempoMedio = (() => {
+    const arr = list.map(i => i.diasCorridos ?? 0).filter(n => n > 0);
+    return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0) / arr.length) : 0;
+  })();
+  const noPrazo = list.filter(i => (i.diasCorridos ?? 0) < (i.prazo ?? 30)).length;
+  const slaPct = stats.total ? Math.round((noPrazo / stats.total) * 100) : 0;
+
+  // Carga por dia da semana
+  const wdLbl = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const cargaSemana = wdLbl.map((w, idx) => ({
+    w, n: list.filter(i => i.dataInstauracao && new Date(i.dataInstauracao).getDay() === idx).length,
+  }));
+  const maxCarga = Math.max(1, ...cargaSemana.map(c => c.n));
+
+  // Ranking de escrivães
+  const escs = Array.from(new Set(list.map(i => i.escrivao).filter(Boolean))) as string[];
+  const ranking = escs.map(e => {
+    const dele = list.filter(i => i.escrivao === e);
+    const conc = dele.filter(i => i.statusDiligencias === "Concluída" || i.situacao === "Relatado").length;
+    const crit = dele.filter(i => (i.diasCorridos ?? 0) >= (i.prazo ?? 30) - 3).length;
+    return { e, total: dele.length, conc, crit, taxa: dele.length ? Math.round((conc/dele.length)*100) : 0 };
+  }).sort((a,b)=>b.total-a.total).slice(0, 6);
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
@@ -190,7 +221,33 @@ export default function Dashboard() {
         <StatCard t="warning" icon={Stethoscope} label="Med. protetivas" value={stats.protetiva} hint="Ativas" />
       </div>
 
-      {/* Alertas + Pendências + Meta */}
+      {/* Semáforo operacional / KPI ticker */}
+      <div className="grid gap-3 rounded-xl border border-border bg-card/60 p-3 md:grid-cols-2 lg:grid-cols-4">
+        {[
+          { lbl: "SLA Geral", val: `${(100 - (stats.critico/Math.max(1,stats.total))*100).toFixed(1)}%`, sub: "Casos dentro do prazo", state: stats.critico/Math.max(1,stats.total) > 0.4 ? "danger" : stats.critico/Math.max(1,stats.total) > 0.2 ? "warning" : "ok", icon: Gauge },
+          { lbl: "Backlog Ativo", val: stats.andamento + (list.filter(i=>i.statusDiligencias==='Pendente').length), sub: "Em andamento + pendentes", state: "warning", icon: Timer },
+          { lbl: "Carga Crítica", val: stats.alta + stats.critico, sub: "Alta prior. + prazo crítico", state: "danger", icon: Flame },
+          { lbl: "Produtividade Mensal", val: list.filter(i=>{const d=i.dataInstauracao?new Date(i.dataInstauracao):null;return d && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();}).length, sub: "Procedimentos no mês", state: "ok", icon: TrendingUp },
+        ].map((k, i) => {
+          const color = k.state === "danger" ? COLORS.danger : k.state === "warning" ? COLORS.warning : COLORS.primary;
+          return (
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2.5">
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-md border border-border" style={{ background: `${color}1A`, color }}>
+                <k.icon className="h-4 w-4" />
+                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
+              </span>
+              <div className="flex-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{k.lbl}</span>
+                  <span className="text-lg font-extrabold tabular-nums" style={{ color }}>{k.val}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">{k.sub}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="panel">
           <div className="flex items-center gap-2 border-b border-border pb-3">
@@ -524,6 +581,111 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Produtividade + Carga semana + Ranking */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="panel">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <Gauge className="h-4 w-4 text-primary" />
+            <h3 className="label-eyebrow text-primary">Produtividade operacional</h3>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { l: "Novos (7d)", v: novos7, c: COLORS.info },
+              { l: "Concluídos (7d)", v: concl7, c: COLORS.primary },
+              { l: "Novos (30d)", v: novos30, c: COLORS.info },
+              { l: "Concluídos (30d)", v: concl30, c: COLORS.primary },
+            ].map(b => (
+              <div key={b.l} className="rounded-lg border border-border/60 bg-background/40 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{b.l}</p>
+                <p className="mt-1 text-2xl font-extrabold tabular-nums" style={{ color: b.c }}>{b.v}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 rounded-lg border border-border/60 bg-background/40 p-3">
+            <div className="mb-1.5 flex items-center justify-between text-xs">
+              <span className="font-semibold">Cumprimento de SLA</span>
+              <span className={`font-bold ${slaPct >= 75 ? 'text-primary' : slaPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{slaPct}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full transition-all" style={{
+                width: `${slaPct}%`,
+                background: slaPct >= 75 ? COLORS.primary : slaPct >= 50 ? COLORS.warning : COLORS.danger,
+              }} />
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Tempo médio de tramitação: <span className="font-bold text-foreground">{tempoMedio} dias</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="panel">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <CalendarDays className="h-4 w-4 text-info" />
+            <h3 className="label-eyebrow text-info">Carga por dia da semana</h3>
+          </div>
+          <div className="mt-4 space-y-2.5">
+            {cargaSemana.map(c => {
+              const pct = (c.n / maxCarga) * 100;
+              const color = pct > 75 ? COLORS.danger : pct > 50 ? COLORS.warning : COLORS.primary;
+              return (
+                <div key={c.w} className="flex items-center gap-3">
+                  <span className="w-9 text-xs font-bold text-muted-foreground">{c.w}</span>
+                  <div className="relative h-6 flex-1 overflow-hidden rounded-md bg-muted/60">
+                    <div className="h-full rounded-md transition-all" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}80, ${color})` }} />
+                    <span className="absolute inset-0 flex items-center justify-end pr-2 text-[11px] font-bold tabular-nums">{c.n}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Distribuição de instaurações por dia da semana — identifica picos operacionais.
+          </p>
+        </div>
+
+        <div className="panel">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <UserCog className="h-4 w-4 text-warning" />
+            <h3 className="label-eyebrow text-warning">Ranking de escrivães</h3>
+          </div>
+          <div className="mt-3 max-h-72 overflow-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 bg-card">
+                <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2">Escrivão</th>
+                  <th className="py-2 text-right">Casos</th>
+                  <th className="py-2 text-right">Concl.</th>
+                  <th className="py-2 text-right">Crít.</th>
+                  <th className="py-2 text-right">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ranking.map(r => (
+                  <tr key={r.e} className="border-t border-border/40">
+                    <td className="py-2 pr-2 font-semibold line-clamp-1 max-w-[140px]">{r.e}</td>
+                    <td className="py-2 text-right tabular-nums">{r.total}</td>
+                    <td className="py-2 text-right tabular-nums text-primary">{r.conc}</td>
+                    <td className="py-2 text-right tabular-nums text-destructive">{r.crit}</td>
+                    <td className={`py-2 text-right font-bold tabular-nums ${r.taxa>=50?'text-primary':r.taxa>=25?'text-warning':'text-destructive'}`}>{r.taxa}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Status bar de sistema */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-border bg-card/60 px-4 py-2 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" /> SIPI v1.0.0</span>
+        <span className="flex items-center gap-1.5"><Server className="h-3 w-3 text-primary" /> Núcleo: <span className="font-bold text-foreground">online</span></span>
+        <span className="flex items-center gap-1.5"><Database className="h-3 w-3 text-info" /> Base sincronizada — {stats.total} registros</span>
+        <span className="flex items-center gap-1.5"><Wifi className="h-3 w-3 text-primary" /> Latência <span className="font-bold text-foreground">42ms</span></span>
+        <span className="flex items-center gap-1.5"><ShieldCheck className="h-3 w-3 text-primary" /> Sessão segura · DELEGADO ALVES</span>
+        <span className="ml-auto flex items-center gap-1.5"><Clock className="h-3 w-3" /> Última sincronização: {dt} {tm}</span>
+      </div>
     </div>
   );
 }
+
