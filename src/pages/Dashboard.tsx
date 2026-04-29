@@ -581,6 +581,111 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Produtividade + Carga semana + Ranking */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="panel">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <Gauge className="h-4 w-4 text-primary" />
+            <h3 className="label-eyebrow text-primary">Produtividade operacional</h3>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {[
+              { l: "Novos (7d)", v: novos7, c: COLORS.info },
+              { l: "Concluídos (7d)", v: concl7, c: COLORS.primary },
+              { l: "Novos (30d)", v: novos30, c: COLORS.info },
+              { l: "Concluídos (30d)", v: concl30, c: COLORS.primary },
+            ].map(b => (
+              <div key={b.l} className="rounded-lg border border-border/60 bg-background/40 p-3">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{b.l}</p>
+                <p className="mt-1 text-2xl font-extrabold tabular-nums" style={{ color: b.c }}>{b.v}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 rounded-lg border border-border/60 bg-background/40 p-3">
+            <div className="mb-1.5 flex items-center justify-between text-xs">
+              <span className="font-semibold">Cumprimento de SLA</span>
+              <span className={`font-bold ${slaPct >= 75 ? 'text-primary' : slaPct >= 50 ? 'text-warning' : 'text-destructive'}`}>{slaPct}%</span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-muted">
+              <div className="h-full rounded-full transition-all" style={{
+                width: `${slaPct}%`,
+                background: slaPct >= 75 ? COLORS.primary : slaPct >= 50 ? COLORS.warning : COLORS.danger,
+              }} />
+            </div>
+            <p className="mt-2 text-[11px] text-muted-foreground">
+              Tempo médio de tramitação: <span className="font-bold text-foreground">{tempoMedio} dias</span>
+            </p>
+          </div>
+        </div>
+
+        <div className="panel">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <CalendarDays className="h-4 w-4 text-info" />
+            <h3 className="label-eyebrow text-info">Carga por dia da semana</h3>
+          </div>
+          <div className="mt-4 space-y-2.5">
+            {cargaSemana.map(c => {
+              const pct = (c.n / maxCarga) * 100;
+              const color = pct > 75 ? COLORS.danger : pct > 50 ? COLORS.warning : COLORS.primary;
+              return (
+                <div key={c.w} className="flex items-center gap-3">
+                  <span className="w-9 text-xs font-bold text-muted-foreground">{c.w}</span>
+                  <div className="relative h-6 flex-1 overflow-hidden rounded-md bg-muted/60">
+                    <div className="h-full rounded-md transition-all" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${color}80, ${color})` }} />
+                    <span className="absolute inset-0 flex items-center justify-end pr-2 text-[11px] font-bold tabular-nums">{c.n}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Distribuição de instaurações por dia da semana — identifica picos operacionais.
+          </p>
+        </div>
+
+        <div className="panel">
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <UserCog className="h-4 w-4 text-warning" />
+            <h3 className="label-eyebrow text-warning">Ranking de escrivães</h3>
+          </div>
+          <div className="mt-3 max-h-72 overflow-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 bg-card">
+                <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2">Escrivão</th>
+                  <th className="py-2 text-right">Casos</th>
+                  <th className="py-2 text-right">Concl.</th>
+                  <th className="py-2 text-right">Crít.</th>
+                  <th className="py-2 text-right">%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ranking.map(r => (
+                  <tr key={r.e} className="border-t border-border/40">
+                    <td className="py-2 pr-2 font-semibold line-clamp-1 max-w-[140px]">{r.e}</td>
+                    <td className="py-2 text-right tabular-nums">{r.total}</td>
+                    <td className="py-2 text-right tabular-nums text-primary">{r.conc}</td>
+                    <td className="py-2 text-right tabular-nums text-destructive">{r.crit}</td>
+                    <td className={`py-2 text-right font-bold tabular-nums ${r.taxa>=50?'text-primary':r.taxa>=25?'text-warning':'text-destructive'}`}>{r.taxa}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      {/* Status bar de sistema */}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-lg border border-border bg-card/60 px-4 py-2 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" /> SIPI v1.0.0</span>
+        <span className="flex items-center gap-1.5"><Server className="h-3 w-3 text-primary" /> Núcleo: <span className="font-bold text-foreground">online</span></span>
+        <span className="flex items-center gap-1.5"><Database className="h-3 w-3 text-info" /> Base sincronizada — {stats.total} registros</span>
+        <span className="flex items-center gap-1.5"><Wifi className="h-3 w-3 text-primary" /> Latência <span className="font-bold text-foreground">42ms</span></span>
+        <span className="flex items-center gap-1.5"><ShieldCheck className="h-3 w-3 text-primary" /> Sessão segura · DELEGADO ALVES</span>
+        <span className="ml-auto flex items-center gap-1.5"><Clock className="h-3 w-3" /> Última sincronização: {dt} {tm}</span>
+      </div>
     </div>
   );
 }
+
