@@ -191,7 +191,33 @@ export default function Dashboard() {
         <StatCard t="warning" icon={Stethoscope} label="Med. protetivas" value={stats.protetiva} hint="Ativas" />
       </div>
 
-      {/* Alertas + Pendências + Meta */}
+      {/* Semáforo operacional / KPI ticker */}
+      <div className="grid gap-3 rounded-xl border border-border bg-card/60 p-3 md:grid-cols-2 lg:grid-cols-4">
+        {[
+          { lbl: "SLA Geral", val: `${(100 - (stats.critico/Math.max(1,stats.total))*100).toFixed(1)}%`, sub: "Casos dentro do prazo", state: stats.critico/Math.max(1,stats.total) > 0.4 ? "danger" : stats.critico/Math.max(1,stats.total) > 0.2 ? "warning" : "ok", icon: Gauge },
+          { lbl: "Backlog Ativo", val: stats.andamento + (list.filter(i=>i.statusDiligencias==='Pendente').length), sub: "Em andamento + pendentes", state: "warning", icon: Timer },
+          { lbl: "Carga Crítica", val: stats.alta + stats.critico, sub: "Alta prior. + prazo crítico", state: "danger", icon: Flame },
+          { lbl: "Produtividade Mensal", val: list.filter(i=>{const d=i.dataInstauracao?new Date(i.dataInstauracao):null;return d && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();}).length, sub: "Procedimentos no mês", state: "ok", icon: TrendingUp },
+        ].map((k, i) => {
+          const color = k.state === "danger" ? COLORS.danger : k.state === "warning" ? COLORS.warning : COLORS.primary;
+          return (
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2.5">
+              <span className="relative flex h-9 w-9 items-center justify-center rounded-md border border-border" style={{ background: `${color}1A`, color }}>
+                <k.icon className="h-4 w-4" />
+                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
+              </span>
+              <div className="flex-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{k.lbl}</span>
+                  <span className="text-lg font-extrabold tabular-nums" style={{ color }}>{k.val}</span>
+                </div>
+                <p className="text-[11px] text-muted-foreground">{k.sub}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="panel">
           <div className="flex items-center gap-2 border-b border-border pb-3">
