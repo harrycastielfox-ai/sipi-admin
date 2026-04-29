@@ -153,6 +153,36 @@ export default function Dashboard() {
   const dt = now.toLocaleDateString("pt-BR");
   const tm = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
 
+  // Produtividade 7d / 30d
+  const daysAgo = (n: number) => { const d = new Date(); d.setDate(d.getDate() - n); return d; };
+  const inRange = (d: string | null | undefined, n: number) => !!d && new Date(d) >= daysAgo(n);
+  const novos7 = list.filter(i => inRange(i.dataInstauracao, 7)).length;
+  const novos30 = list.filter(i => inRange(i.dataInstauracao, 30)).length;
+  const concl7 = list.filter(i => inRange(i.ultimaAtualizacao, 7) && (i.statusDiligencias === "Concluída" || i.situacao === "Relatado")).length;
+  const concl30 = list.filter(i => inRange(i.ultimaAtualizacao, 30) && (i.statusDiligencias === "Concluída" || i.situacao === "Relatado")).length;
+  const tempoMedio = (() => {
+    const arr = list.map(i => i.diasCorridos ?? 0).filter(n => n > 0);
+    return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0) / arr.length) : 0;
+  })();
+  const noPrazo = list.filter(i => (i.diasCorridos ?? 0) < (i.prazo ?? 30)).length;
+  const slaPct = stats.total ? Math.round((noPrazo / stats.total) * 100) : 0;
+
+  // Carga por dia da semana
+  const wdLbl = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const cargaSemana = wdLbl.map((w, idx) => ({
+    w, n: list.filter(i => i.dataInstauracao && new Date(i.dataInstauracao).getDay() === idx).length,
+  }));
+  const maxCarga = Math.max(1, ...cargaSemana.map(c => c.n));
+
+  // Ranking de escrivães
+  const escs = Array.from(new Set(list.map(i => i.escrivao).filter(Boolean))) as string[];
+  const ranking = escs.map(e => {
+    const dele = list.filter(i => i.escrivao === e);
+    const conc = dele.filter(i => i.statusDiligencias === "Concluída" || i.situacao === "Relatado").length;
+    const crit = dele.filter(i => (i.diasCorridos ?? 0) >= (i.prazo ?? 30) - 3).length;
+    return { e, total: dele.length, conc, crit, taxa: dele.length ? Math.round((conc/dele.length)*100) : 0 };
+  }).sort((a,b)=>b.total-a.total).slice(0, 6);
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
