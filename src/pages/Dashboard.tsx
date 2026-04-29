@@ -3,6 +3,7 @@ import { inqueritosStore } from "@/lib/inqueritos";
 import {
   FileText, Clock, CheckCircle2, TrendingUp, AlertTriangle,
   ShieldAlert, Stethoscope, Activity, Plus, Filter, Bell, Users, MapPin,
+  Gauge, Timer, Flame, Server, Wifi, Database, ShieldCheck, UserCog, CalendarDays,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
