@@ -221,19 +221,19 @@ export default function Dashboard() {
         <StatCard t="warning" icon={Stethoscope} label="Med. protetivas" value={stats.protetiva} hint="Ativas" />
       </div>
 
-      {/* Semáforo operacional / KPI ticker */}
-      <div className="grid gap-3 rounded-xl border border-border bg-card/60 p-3 md:grid-cols-2 lg:grid-cols-4">
+      {/* Faixa de KPIs operacionais */}
+      <div className="grid gap-3 rounded-xl border border-primary/20 bg-card/70 p-3 shadow-[inset_0_1px_0_hsl(var(--primary)/0.15)] md:grid-cols-2 lg:grid-cols-4">
         {[
-          { lbl: "SLA Geral", val: `${(100 - (stats.critico/Math.max(1,stats.total))*100).toFixed(1)}%`, sub: "Casos dentro do prazo", state: stats.critico/Math.max(1,stats.total) > 0.4 ? "danger" : stats.critico/Math.max(1,stats.total) > 0.2 ? "warning" : "ok", icon: Gauge },
-          { lbl: "Backlog Ativo", val: stats.andamento + (list.filter(i=>i.statusDiligencias==='Pendente').length), sub: "Em andamento + pendentes", state: "warning", icon: Timer },
-          { lbl: "Carga Crítica", val: stats.alta + stats.critico, sub: "Alta prior. + prazo crítico", state: "danger", icon: Flame },
-          { lbl: "Produtividade Mensal", val: list.filter(i=>{const d=i.dataInstauracao?new Date(i.dataInstauracao):null;return d && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();}).length, sub: "Procedimentos no mês", state: "ok", icon: TrendingUp },
+          { lbl: "SLA geral", val: `${slaPct}%`, sub: "Percentual dentro do prazo", state: slaPct < 65 ? "danger" : slaPct < 80 ? "warning" : "ok", icon: Gauge },
+          { lbl: "Backlog ativo", val: stats.andamento + (list.filter(i=>i.statusDiligencias==='Pendente').length), sub: "Em andamento + pendentes", state: "warning", icon: Timer },
+          { lbl: "Carga crítica", val: stats.alta + stats.critico, sub: "Prioridade alta + prazo crítico", state: "danger", icon: Flame },
+          { lbl: "Produtividade mensal", val: novos30, sub: "Entradas nos últimos 30 dias", state: "ok", icon: TrendingUp },
         ].map((k, i) => {
           const color = k.state === "danger" ? COLORS.danger : k.state === "warning" ? COLORS.warning : COLORS.primary;
           return (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 px-3 py-2.5">
-              <span className="relative flex h-9 w-9 items-center justify-center rounded-md border border-border" style={{ background: `${color}1A`, color }}>
-                <k.icon className="h-4 w-4" />
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-border/70 bg-background/50 px-3 py-2.5 shadow-[0_0_0_1px_hsl(var(--background)/0.4)]">
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-md border border-border/80" style={{ background: `${color}1A`, color }}>
+                <k.icon className="h-4.5 w-4.5" />
                 <span className="absolute -right-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
               </span>
               <div className="flex-1">
@@ -249,25 +249,25 @@ export default function Dashboard() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="panel">
+        <div className="panel border-destructive/45 bg-gradient-to-br from-destructive/[0.07] via-card to-card shadow-[0_0_0_1px_hsl(var(--destructive)/0.35),0_10px_35px_hsl(var(--destructive)/0.12)]">
           <div className="flex items-center gap-2 border-b border-border pb-3">
-            <Bell className="h-4 w-4 text-destructive" />
-            <h3 className="label-eyebrow text-destructive">Alertas críticos</h3>
+            <Bell className="h-5 w-5 text-destructive" />
+            <h3 className="label-eyebrow text-destructive tracking-[0.2em]">Alertas críticos</h3>
           </div>
-          <ul className="mt-4 space-y-3">
+          <ul className="mt-5 space-y-3.5">
             {[
               { t: "Inquéritos em prazo crítico", s: "Menos de 3 dias para vencer", n: stats.critico, c: "destructive" },
               { t: "Casos prioridade ALTA", s: "Demandam ação imediata", n: stats.alta, c: "warning" },
               { t: "CVLI sem relatar", s: "IP de homicídios pendentes", n: cvliPend, c: "info" },
               { t: "Crimes Sexuais sem relatar", s: "Aguardando conclusão", n: sexPend, c: "violet" },
             ].map((a, i) => (
-              <li key={i} className="flex items-center gap-3 rounded-lg border border-border/60 bg-background/40 p-3">
-                <span className="h-2 w-2 rounded-full" style={{ background: a.c==='violet' ? COLORS.violet : `hsl(var(--${a.c}))` }} />
+              <li key={i} className="flex items-center gap-3 rounded-lg border border-border/70 bg-background/60 p-3.5">
+                <span className="h-2.5 w-2.5 rounded-full shadow-[0_0_10px_currentColor]" style={{ background: a.c==='violet' ? COLORS.violet : `hsl(var(--${a.c}))` }} />
                 <div className="flex-1">
-                  <p className="text-sm font-semibold">{a.t}</p>
-                  <p className="text-xs text-muted-foreground">{a.s}</p>
+                  <p className="text-sm font-bold text-foreground">{a.t}</p>
+                  <p className="text-xs text-muted-foreground/95">{a.s}</p>
                 </div>
-                <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${
+                <span className={`rounded-md border px-2.5 py-1 text-xs font-extrabold tabular-nums ${
                   a.c==='destructive'?'bg-destructive/15 text-destructive':
                   a.c==='warning'?'bg-warning/15 text-warning':
                   a.c==='violet'?'bg-[hsl(270_70%_60%/0.15)] text-[hsl(270_80%_75%)]':
@@ -283,25 +283,25 @@ export default function Dashboard() {
             <AlertTriangle className="h-4 w-4 text-warning" />
             <h3 className="label-eyebrow text-warning">Pendências por categoria</h3>
           </div>
-          <ul className="mt-4 space-y-3 text-sm">
+          <ul className="mt-4 space-y-2.5 text-sm">
             {[
               ["IP de CVLI sem relatar", cvliPend, COLORS.warning],
               ["IP de Crimes Sexuais sem relatar", sexPend, COLORS.warning],
               ["IP de Violência Doméstica sem relatar", vdPend, COLORS.warning],
               ["APF não relatados", apfPend, COLORS.warning],
-            ].map(([l, n, c]: any) => (
-              <li key={l} className="flex items-center justify-between rounded-lg border border-border/60 bg-background/40 px-3 py-3">
-                <span className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />
+            ].sort((a:any,b:any)=>b[1]-a[1]).map(([l, n, c]: any, idx:number) => (
+              <li key={l} className={`flex items-center justify-between rounded-lg border px-3 py-3 ${idx===0 ? "border-warning/45 bg-warning/10" : "border-border/60 bg-background/40"}`}>
+                <span className="flex items-center gap-2.5">
+                  <span className={`rounded-full ${idx===0 ? "h-2 w-2 shadow-[0_0_10px_hsl(var(--warning))]" : "h-1.5 w-1.5"}`} style={{ background: c }} />
                   {l}
                 </span>
-                <span className="font-bold text-warning">{n}</span>
+                <span className={`min-w-9 rounded px-2 py-0.5 text-right font-extrabold tabular-nums ${idx===0 ? "bg-warning/20 text-warning" : "text-warning"}`}>{n}</span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="panel">
+        <div className="panel border-primary/35 bg-gradient-to-br from-primary/[0.06] via-card to-card shadow-[inset_0_1px_0_hsl(var(--primary)/0.2)]">
           <div className="flex items-center gap-2 border-b border-border pb-3">
             <CheckCircle2 className="h-4 w-4 text-primary" />
             <h3 className="label-eyebrow text-primary">Meta de conclusão</h3>
@@ -322,15 +322,15 @@ export default function Dashboard() {
               </li>
             ))}
           </ul>
-          <div className="mt-3 rounded-lg border border-border/60 bg-background/40 p-3">
+          <div className="mt-3 rounded-lg border border-primary/30 bg-background/55 p-3.5 shadow-[0_0_20px_hsl(var(--primary)/0.08)]">
             <div className="mb-2 flex items-center justify-between text-xs">
               <div>
                 <p className="font-semibold">Taxa de conclusão atual</p>
                 <p className="text-[11px] text-muted-foreground">Meta: 45% — atual {taxa.toFixed(2)}%</p>
               </div>
-              <span className="text-lg font-extrabold text-primary">{taxa.toFixed(0)}%</span>
+              <span className="rounded-md border border-primary/40 bg-primary/15 px-2 py-0.5 text-xl font-extrabold text-primary">{taxa.toFixed(0)}%</span>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-muted">
+            <div className="h-2.5 overflow-hidden rounded-full border border-primary/20 bg-muted">
               <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-glow transition-all"
                 style={{ width: `${Math.min(100, taxa)}%` }} />
             </div>
@@ -688,4 +688,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
