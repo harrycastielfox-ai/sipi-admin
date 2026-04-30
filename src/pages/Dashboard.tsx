@@ -266,19 +266,24 @@ export default function Dashboard() {
             <AlertTriangle className="h-4 w-4 text-warning" />
             <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-warning">Pendências por categoria</h3>
           </div>
-          <ul className="mt-2 space-y-0.5 text-sm">
+          <ul className="mt-2 space-y-1 text-sm">
             {[
-              ["IP de CVLI sem relatar", cvliPend],
-              ["IP de Crimes Sexuais sem relatar", sexPend],
-              ["IP de Violência Doméstica sem relatar", vdPend],
-              ["APF não relatados", apfPend],
-            ].sort((a:any,b:any)=>b[1]-a[1]).map(([l, n]: any) => (
-              <li key={l} className="flex items-center justify-between rounded-md px-2 py-2.5 transition-colors hover:bg-warning/5">
+              { l: "IP de CVLI sem relatar", n: cvliPend, c: "info" },
+              { l: "IP de Crimes Sexuais sem relatar", n: sexPend, c: "violet" },
+              { l: "IP de Violência Doméstica sem relatar", n: vdPend, c: "warning" },
+              { l: "APF não relatados", n: apfPend, c: "destructive" },
+            ].sort((a:any,b:any)=>b.n-a.n).map(({ l, n, c }: any) => (
+              <li key={l} className="flex items-center justify-between rounded-md px-2 py-2.5 transition-colors hover:bg-muted/40">
                 <span className="flex items-center gap-2.5 text-foreground/90">
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: COLORS.warning }} />
+                  <span className="h-1.5 w-1.5 rounded-full shadow-[0_0_6px_currentColor]" style={{ background: c==='violet' ? COLORS.violet : `hsl(var(--${c}))`, color: c==='violet' ? COLORS.violet : `hsl(var(--${c}))` }} />
                   {l}
                 </span>
-                <span className="font-extrabold tabular-nums text-warning">{n}</span>
+                <span className={`rounded-md border px-2 py-0.5 text-[11px] font-extrabold tabular-nums ${
+                  c==='destructive'?'border-destructive/40 bg-destructive/15 text-destructive':
+                  c==='warning'?'border-warning/40 bg-warning/15 text-warning':
+                  c==='violet'?'border-[hsl(270_70%_60%/0.4)] bg-[hsl(270_70%_60%/0.15)] text-[hsl(270_80%_75%)]':
+                  'border-info/40 bg-info/15 text-info'
+                }`}>{n}</span>
               </li>
             ))}
           </ul>
