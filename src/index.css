@@ -87,7 +87,7 @@
     @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground;
   }
   .kpi-card {
-    @apply relative overflow-hidden rounded-xl border border-border/70 bg-card px-4 py-3.5 transition-all duration-300;
+    @apply relative overflow-hidden rounded-2xl border border-border/70 bg-card px-5 py-5 transition-all duration-300;
     background: var(--gradient-card);
     box-shadow: var(--shadow-card);
   }
@@ -107,7 +107,7 @@
   }
   .kpi-card:hover::before { opacity: 1; }
   .kpi-icon {
-    @apply relative flex h-7 w-7 items-center justify-center rounded-md border;
+    @apply relative flex h-9 w-9 items-center justify-center rounded-lg border;
     background: color-mix(in oklab, var(--kpi-accent, hsl(var(--primary))) 14%, transparent);
     border-color: color-mix(in oklab, var(--kpi-accent, hsl(var(--primary))) 40%, transparent);
     color: var(--kpi-accent, hsl(var(--primary)));
