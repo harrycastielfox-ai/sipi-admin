@@ -338,8 +338,8 @@ export default function Dashboard() {
               </div>
               <span className="rounded-md border border-primary/40 bg-primary/15 px-2 py-0.5 text-xl font-extrabold text-primary">{taxa.toFixed(0)}%</span>
             </div>
-            <div className="h-2.5 overflow-hidden rounded-full border border-primary/20 bg-muted">
-              <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-glow transition-all"
+            <div className="h-3 overflow-hidden rounded-full border border-primary/20 bg-muted/70">
+              <div className="progress-shimmer h-full rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${Math.min(100, taxa)}%` }} />
             </div>
           </div>
