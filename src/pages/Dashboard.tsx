@@ -229,33 +229,6 @@ export default function Dashboard() {
         <StatCard t="warning" icon={Stethoscope} label="Med. protetivas" value={stats.protetiva} hint="Ativas" />
       </div>
 
-      {/* Faixa de KPIs operacionais */}
-      <div className="grid gap-3 rounded-xl border border-primary/20 bg-card/70 p-3 shadow-[inset_0_1px_0_hsl(var(--primary)/0.15)] md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { lbl: "SLA geral", val: `${slaPct}%`, sub: "Percentual dentro do prazo", state: slaPct < 65 ? "danger" : slaPct < 80 ? "warning" : "ok", icon: Gauge },
-          { lbl: "Backlog ativo", val: stats.andamento + (list.filter(i=>i.statusDiligencias==='Pendente').length), sub: "Em andamento + pendentes", state: "warning", icon: Timer },
-          { lbl: "Carga crítica", val: stats.alta + stats.critico, sub: "Prioridade alta + prazo crítico", state: "danger", icon: Flame },
-          { lbl: "Produtividade mensal", val: novos30, sub: "Entradas nos últimos 30 dias", state: "ok", icon: TrendingUp },
-        ].map((k, i) => {
-          const color = k.state === "danger" ? COLORS.danger : k.state === "warning" ? COLORS.warning : COLORS.primary;
-          return (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-border/70 bg-background/50 px-3 py-2.5 shadow-[0_0_0_1px_hsl(var(--background)/0.4)]">
-              <span className="relative flex h-10 w-10 items-center justify-center rounded-md border border-border/80" style={{ background: `${color}1A`, color }}>
-                <k.icon className="h-4.5 w-4.5" />
-                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
-              </span>
-              <div className="flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{k.lbl}</span>
-                  <span className="text-lg font-extrabold tabular-nums" style={{ color }}>{k.val}</span>
-                </div>
-                <p className="text-[11px] text-muted-foreground">{k.sub}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-3">
         <div className="panel border-destructive/45 bg-gradient-to-br from-destructive/[0.07] via-card to-card shadow-[0_0_0_1px_hsl(var(--destructive)/0.35),0_10px_35px_hsl(var(--destructive)/0.12)]">
           <div className="flex items-center gap-2 border-b border-border pb-3">
