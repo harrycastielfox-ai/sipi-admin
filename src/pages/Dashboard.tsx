@@ -27,16 +27,16 @@ function StatCard({ label, value, hint, icon: Icon, t }: any) {
       style={{ ["--kpi-accent" as any]: a.color, ["--kpi-glow" as any]: a.glow }}
     >
       <div className="relative flex items-center justify-between">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
         <div className="kpi-icon transition-transform duration-300 group-hover:scale-110">
-          <Icon className="h-3.5 w-3.5" />
+          <Icon className="h-4 w-4" />
         </div>
       </div>
-      <p className={`relative mt-2 text-[2.1rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
-         style={{ textShadow: `0 0 22px ${a.glow}` }}>
+      <p className={`relative mt-4 text-[2.6rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
+         style={{ textShadow: `0 0 24px ${a.glow}` }}>
         {value}
       </p>
-      <p className="relative mt-1.5 text-[11px] text-muted-foreground">{hint}</p>
+      <p className="relative mt-2 text-[11px] text-muted-foreground">{hint}</p>
     </div>
   );
 }
@@ -185,12 +185,12 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3 rounded-2xl border border-border/70 bg-card/40 p-5 backdrop-blur-sm">
+      {/* Header (sem caixa) */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="header-accent">
           <div className="flex items-center gap-2.5">
             <Activity className="h-6 w-6 text-primary drop-shadow-[0_0_10px_hsl(var(--primary)/0.6)]" />
-            <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
               Painel de Controle
             </h1>
           </div>
@@ -201,14 +201,14 @@ export default function Dashboard() {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to="/novo-caso"
-            className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary-glow px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.7)] ring-1 ring-primary/30 transition-all hover:scale-[1.02] hover:shadow-[0_12px_32px_-8px_hsl(var(--primary)/0.9)] active:scale-[0.98]"
+            className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary-glow px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.7)] ring-1 ring-primary/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" /> Novo Inquérito
           </Link>
-          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-card/70 px-4 py-2.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-primary/50 hover:bg-card active:scale-[0.98]">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-card/70 px-4 py-2.5 text-sm font-semibold text-foreground transition-all hover:scale-[1.02] hover:border-primary/50 active:scale-[0.98]">
             <Filter className="h-4 w-4" /> Filtros Rápidos
           </button>
-          <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-card/60 px-3 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+          <div className="flex items-center gap-2 px-2 text-xs text-muted-foreground">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
@@ -229,77 +229,52 @@ export default function Dashboard() {
         <StatCard t="warning" icon={Stethoscope} label="Med. protetivas" value={stats.protetiva} hint="Ativas" />
       </div>
 
-      {/* Faixa de KPIs operacionais */}
-      <div className="grid gap-3 rounded-xl border border-primary/20 bg-card/70 p-3 shadow-[inset_0_1px_0_hsl(var(--primary)/0.15)] md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { lbl: "SLA geral", val: `${slaPct}%`, sub: "Percentual dentro do prazo", state: slaPct < 65 ? "danger" : slaPct < 80 ? "warning" : "ok", icon: Gauge },
-          { lbl: "Backlog ativo", val: stats.andamento + (list.filter(i=>i.statusDiligencias==='Pendente').length), sub: "Em andamento + pendentes", state: "warning", icon: Timer },
-          { lbl: "Carga crítica", val: stats.alta + stats.critico, sub: "Prioridade alta + prazo crítico", state: "danger", icon: Flame },
-          { lbl: "Produtividade mensal", val: novos30, sub: "Entradas nos últimos 30 dias", state: "ok", icon: TrendingUp },
-        ].map((k, i) => {
-          const color = k.state === "danger" ? COLORS.danger : k.state === "warning" ? COLORS.warning : COLORS.primary;
-          return (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-border/70 bg-background/50 px-3 py-2.5 shadow-[0_0_0_1px_hsl(var(--background)/0.4)]">
-              <span className="relative flex h-10 w-10 items-center justify-center rounded-md border border-border/80" style={{ background: `${color}1A`, color }}>
-                <k.icon className="h-4.5 w-4.5" />
-                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full" style={{ background: color, boxShadow: `0 0 8px ${color}` }} />
-              </span>
-              <div className="flex-1">
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{k.lbl}</span>
-                  <span className="text-lg font-extrabold tabular-nums" style={{ color }}>{k.val}</span>
-                </div>
-                <p className="text-[11px] text-muted-foreground">{k.sub}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="panel border-destructive/45 bg-gradient-to-br from-destructive/[0.07] via-card to-card shadow-[0_0_0_1px_hsl(var(--destructive)/0.35),0_10px_35px_hsl(var(--destructive)/0.12)]">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <Bell className="h-5 w-5 text-destructive" />
-            <h3 className="label-eyebrow text-destructive tracking-[0.2em]">Alertas críticos</h3>
+        {/* Alertas críticos */}
+        <div className="panel">
+          <div className="flex items-center gap-2 pb-3">
+            <Bell className="h-4 w-4 text-destructive" />
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-destructive">Alertas críticos</h3>
           </div>
-          <ul className="mt-5 space-y-3.5">
+          <ul className="mt-2 space-y-1">
             {[
               { t: "Inquéritos em prazo crítico", s: "Menos de 3 dias para vencer", n: stats.critico, c: "destructive" },
               { t: "Casos prioridade ALTA", s: "Demandam ação imediata", n: stats.alta, c: "warning" },
               { t: "CVLI sem relatar", s: "IP de homicídios pendentes", n: cvliPend, c: "info" },
               { t: "Crimes Sexuais sem relatar", s: "Aguardando conclusão", n: sexPend, c: "violet" },
             ].map((a, i) => (
-              <li key={i} className="flex items-center gap-3 rounded-lg border border-border/70 bg-background/60 p-3.5">
-                <span className="h-2.5 w-2.5 rounded-full shadow-[0_0_10px_currentColor]" style={{ background: a.c==='violet' ? COLORS.violet : `hsl(var(--${a.c}))` }} />
+              <li key={i} className="flex items-center gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-muted/40">
+                <span className="h-2 w-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: a.c==='violet' ? COLORS.violet : `hsl(var(--${a.c}))`, color: a.c==='violet' ? COLORS.violet : `hsl(var(--${a.c}))` }} />
                 <div className="flex-1">
                   <p className="text-sm font-bold text-foreground">{a.t}</p>
-                  <p className="text-xs text-muted-foreground/95">{a.s}</p>
+                  <p className="text-[11px] text-muted-foreground">{a.s}</p>
                 </div>
-                <span className={`rounded-md border px-2.5 py-1 text-xs font-extrabold tabular-nums ${
-                  a.c==='destructive'?'bg-destructive/15 text-destructive':
-                  a.c==='warning'?'bg-warning/15 text-warning':
-                  a.c==='violet'?'bg-[hsl(270_70%_60%/0.15)] text-[hsl(270_80%_75%)]':
-                  'bg-info/15 text-info'
+                <span className={`rounded-md border px-2 py-0.5 text-[11px] font-extrabold tabular-nums ${
+                  a.c==='destructive'?'border-destructive/40 bg-destructive/15 text-destructive':
+                  a.c==='warning'?'border-warning/40 bg-warning/15 text-warning':
+                  a.c==='violet'?'border-[hsl(270_70%_60%/0.4)] bg-[hsl(270_70%_60%/0.15)] text-[hsl(270_80%_75%)]':
+                  'border-info/40 bg-info/15 text-info'
                 }`}>{a.n}</span>
               </li>
             ))}
           </ul>
         </div>
 
+        {/* Pendências */}
         <div className="panel">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <AlertTriangle className="h-4 w-4 text-warning" />
-            <h3 className="label-eyebrow text-warning">Pendências por categoria</h3>
+          <div className="flex items-center gap-2 pb-3">
+            <Bell className="h-4 w-4 text-warning" />
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-warning">Pendências por categoria</h3>
           </div>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-2 space-y-0.5 text-sm">
             {[
-              ["IP de CVLI sem relatar", cvliPend, COLORS.warning],
-              ["IP de Crimes Sexuais sem relatar", sexPend, COLORS.warning],
-              ["IP de Violência Doméstica sem relatar", vdPend, COLORS.warning],
-              ["APF não relatados", apfPend, COLORS.warning],
-            ].sort((a:any,b:any)=>b[1]-a[1]).map(([l, n, c]: any, idx:number) => (
-              <li key={l} className="flex items-center justify-between rounded-md px-2 py-2 text-muted-foreground transition-colors hover:bg-warning/5">
-                <span className="flex items-center gap-2.5">
+              ["IP de CVLI sem relatar", cvliPend],
+              ["IP de Crimes Sexuais sem relatar", sexPend],
+              ["IP de Violência Doméstica sem relatar", vdPend],
+              ["APF não relatados", apfPend],
+            ].sort((a:any,b:any)=>b[1]-a[1]).map(([l, n]: any) => (
+              <li key={l} className="flex items-center justify-between rounded-md px-2 py-2.5 transition-colors hover:bg-warning/5">
+                <span className="flex items-center gap-2.5 text-foreground/90">
                   <span className="h-1.5 w-1.5 rounded-full" style={{ background: COLORS.warning }} />
                   {l}
                 </span>
@@ -309,38 +284,43 @@ export default function Dashboard() {
           </ul>
         </div>
 
-        <div className="panel border-primary/35 bg-gradient-to-br from-primary/[0.06] via-card to-card shadow-[inset_0_1px_0_hsl(var(--primary)/0.2)]">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
+        {/* Meta de conclusão */}
+        <div className="panel">
+          <div className="flex items-center gap-2 pb-3">
             <CheckCircle2 className="h-4 w-4 text-primary" />
-            <h3 className="label-eyebrow text-primary">Meta de conclusão</h3>
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Meta de conclusão</h3>
           </div>
-          <ul className="mt-4 space-y-2.5 text-sm">
+          <ul className="mt-2 space-y-0.5 text-sm">
             {[
               ["Procedimentos cadastrados", stats.total, COLORS.info],
               ["Relatórios enviados", relatados, COLORS.primary],
               ["Em andamento", stats.andamento, COLORS.warning],
               ["Relatados não enviados", naoEnviados, COLORS.violet],
             ].map(([l, n, c]: any) => (
-              <li key={l} className="flex items-center justify-between rounded-md px-2 py-1.5">
-                <span className="flex items-center gap-2 text-muted-foreground">
+              <li key={l} className="flex items-center justify-between rounded-md px-2 py-2 transition-colors hover:bg-muted/40">
+                <span className="flex items-center gap-2.5 text-foreground/90">
                   <span className="h-1.5 w-1.5 rounded-full" style={{ background: c }} />
                   {l}
                 </span>
-                <span className="font-bold">{n}</span>
+                <span className="font-extrabold tabular-nums" style={{ color: c }}>{n}</span>
               </li>
             ))}
           </ul>
-          <div className="mt-3 rounded-lg border border-primary/30 bg-background/55 p-3.5 shadow-[0_0_20px_hsl(var(--primary)/0.08)]">
-            <div className="mb-2 flex items-center justify-between text-xs">
-              <div>
-                <p className="font-semibold">Taxa de conclusão atual</p>
-                <p className="text-[11px] text-muted-foreground">Meta: 45% — atual {taxa.toFixed(2)}%</p>
-              </div>
-              <span className="rounded-md border border-primary/40 bg-primary/15 px-2 py-0.5 text-xl font-extrabold text-primary">{taxa.toFixed(0)}%</span>
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-primary/25 bg-background/40 p-3">
+            <div>
+              <p className="text-xs font-semibold text-foreground">Taxa de conclusão atual</p>
+              <p className="text-[11px] text-muted-foreground">Meta: 45% — atual {taxa.toFixed(2)}%</p>
             </div>
-            <div className="h-3 overflow-hidden rounded-full border border-primary/20 bg-muted/70">
-              <div className="progress-shimmer h-full rounded-full transition-all duration-700 ease-out"
-                style={{ width: `${Math.min(100, taxa)}%` }} />
+            <div className="relative h-14 w-14 shrink-0">
+              <svg viewBox="0 0 36 36" className="h-14 w-14 -rotate-90">
+                <circle cx="18" cy="18" r="15.9155" fill="none" stroke="hsl(var(--muted))" strokeWidth="3" />
+                <circle cx="18" cy="18" r="15.9155" fill="none" stroke="hsl(var(--primary))" strokeWidth="3" strokeLinecap="round"
+                  strokeDasharray={`${Math.min(100,taxa).toFixed(2)}, 100`}
+                  style={{ filter: "drop-shadow(0 0 4px hsl(var(--primary)/0.7))" }} />
+              </svg>
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-[11px] font-extrabold text-primary">
+                {taxa.toFixed(0)}%
+              </div>
             </div>
           </div>
         </div>
