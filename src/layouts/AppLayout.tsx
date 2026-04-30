@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Gavel, PlusCircle, Bell, ShieldCheck, LogOut, Shield, Activity, Plus } from "lucide-react";
+import { LayoutDashboard, FileText, Gavel, PlusCircle, Bell, ShieldCheck, LogOut, Shield } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const items = [
