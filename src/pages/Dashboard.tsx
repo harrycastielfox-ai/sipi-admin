@@ -11,32 +11,32 @@ import {
   CartesianGrid, Tooltip, Legend, ComposedChart, Line,
 } from "recharts";
 
-const tone = {
-  primary: "from-primary/20 to-primary/5 text-primary border-primary/30",
-  info: "from-info/20 to-info/5 text-info border-info/30",
-  warning: "from-warning/20 to-warning/5 text-warning border-warning/30",
-  danger: "from-destructive/25 to-destructive/5 text-destructive border-destructive/30",
-  violet: "from-[hsl(270_70%_60%/0.2)] to-[hsl(270_70%_60%/0.05)] text-[hsl(270_80%_75%)] border-[hsl(270_70%_60%/0.3)]",
-} as const;
+const ACCENTS: Record<string, { color: string; glow: string; text: string }> = {
+  primary: { color: "hsl(152 76% 44%)", glow: "hsl(152 76% 44% / 0.18)", text: "text-primary" },
+  info:    { color: "hsl(199 89% 55%)", glow: "hsl(199 89% 55% / 0.18)", text: "text-info" },
+  warning: { color: "hsl(38 92% 55%)",  glow: "hsl(38 92% 55% / 0.18)",  text: "text-warning" },
+  danger:  { color: "hsl(0 75% 55%)",   glow: "hsl(0 75% 55% / 0.20)",   text: "text-destructive" },
+  violet:  { color: "hsl(270 70% 60%)", glow: "hsl(270 70% 60% / 0.20)", text: "text-[hsl(270_80%_75%)]" },
+};
 
 function StatCard({ label, value, hint, icon: Icon, t }: any) {
+  const a = ACCENTS[t] ?? ACCENTS.primary;
   return (
-    <div className="stat-card">
-      <div className="flex items-start justify-between">
+    <div
+      className="kpi-card group"
+      style={{ ["--kpi-accent" as any]: a.color, ["--kpi-glow" as any]: a.glow }}
+    >
+      <div className="relative flex items-start justify-between">
         <p className="label-eyebrow">{label}</p>
-        <div className={`flex h-9 w-9 items-center justify-center rounded-lg border bg-gradient-to-br ${tone[t as keyof typeof tone]}`}>
-          <Icon className="h-4 w-4" />
+        <div className="kpi-icon transition-transform duration-300 group-hover:scale-110">
+          <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className={`mt-3 text-4xl font-extrabold tracking-tight ${
-        t==='danger'?'text-destructive':
-        t==='warning'?'text-warning':
-        t==='info'?'text-info':
-        t==='violet'?'text-[hsl(270_80%_75%)]':'text-primary'
-      }`}>
+      <p className={`relative mt-4 text-[2.6rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
+         style={{ textShadow: `0 0 24px ${a.glow}` }}>
         {value}
       </p>
-      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+      <p className="relative mt-2 text-xs text-muted-foreground">{hint}</p>
     </div>
   );
 }
@@ -186,32 +186,40 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Activity className="h-6 w-6 text-primary" />
-            <h1 className="text-3xl font-extrabold tracking-tight">Painel de Controle</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3 rounded-2xl border border-border/70 bg-card/40 p-5 backdrop-blur-sm">
+        <div className="header-accent">
+          <div className="flex items-center gap-2.5">
+            <Activity className="h-6 w-6 text-primary drop-shadow-[0_0_10px_hsl(var(--primary)/0.6)]" />
+            <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
+              Painel de Controle
+            </h1>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Delegacia Territorial de Itabela — 23ª COORPIN — atualizado em {dt} às {tm}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link to="/novo-caso" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition hover:brightness-110">
-            <Plus className="h-4 w-4" /> Novo Inquérito
+          <Link
+            to="/novo-caso"
+            className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary-glow px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.7)] ring-1 ring-primary/30 transition-all hover:scale-[1.02] hover:shadow-[0_12px_32px_-8px_hsl(var(--primary)/0.9)] active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" /> Novo Inquérito
           </Link>
-          <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:border-primary/40">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-card/70 px-4 py-2.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-primary/50 hover:bg-card active:scale-[0.98]">
             <Filter className="h-4 w-4" /> Filtros Rápidos
           </button>
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+          <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-card/60 px-3 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
             Atualizado: {dt}, {tm}
           </div>
         </div>
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-7">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
         <StatCard t="primary" icon={FileText} label="Total" value={stats.total} hint="Procedimentos cadastrados" />
         <StatCard t="info" icon={Clock} label="Em andamento" value={stats.andamento} hint={`${Math.round((stats.andamento/Math.max(1,stats.total))*100)}% do total`} />
         <StatCard t="primary" icon={CheckCircle2} label="Concluídos" value={stats.concluidos} hint={`${(taxa).toFixed(2)}% taxa atual`} />
@@ -330,8 +338,8 @@ export default function Dashboard() {
               </div>
               <span className="rounded-md border border-primary/40 bg-primary/15 px-2 py-0.5 text-xl font-extrabold text-primary">{taxa.toFixed(0)}%</span>
             </div>
-            <div className="h-2.5 overflow-hidden rounded-full border border-primary/20 bg-muted">
-              <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-glow transition-all"
+            <div className="h-3 overflow-hidden rounded-full border border-primary/20 bg-muted/70">
+              <div className="progress-shimmer h-full rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${Math.min(100, taxa)}%` }} />
             </div>
           </div>
