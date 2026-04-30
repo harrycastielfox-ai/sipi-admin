@@ -11,32 +11,32 @@ import {
   CartesianGrid, Tooltip, Legend, ComposedChart, Line,
 } from "recharts";
 
-const tone = {
-  primary: "from-primary/20 to-primary/5 text-primary border-primary/30",
-  info: "from-info/20 to-info/5 text-info border-info/30",
-  warning: "from-warning/20 to-warning/5 text-warning border-warning/30",
-  danger: "from-destructive/25 to-destructive/5 text-destructive border-destructive/30",
-  violet: "from-[hsl(270_70%_60%/0.2)] to-[hsl(270_70%_60%/0.05)] text-[hsl(270_80%_75%)] border-[hsl(270_70%_60%/0.3)]",
-} as const;
+const ACCENTS: Record<string, { color: string; glow: string; text: string }> = {
+  primary: { color: "hsl(152 76% 44%)", glow: "hsl(152 76% 44% / 0.18)", text: "text-primary" },
+  info:    { color: "hsl(199 89% 55%)", glow: "hsl(199 89% 55% / 0.18)", text: "text-info" },
+  warning: { color: "hsl(38 92% 55%)",  glow: "hsl(38 92% 55% / 0.18)",  text: "text-warning" },
+  danger:  { color: "hsl(0 75% 55%)",   glow: "hsl(0 75% 55% / 0.20)",   text: "text-destructive" },
+  violet:  { color: "hsl(270 70% 60%)", glow: "hsl(270 70% 60% / 0.20)", text: "text-[hsl(270_80%_75%)]" },
+};
 
 function StatCard({ label, value, hint, icon: Icon, t }: any) {
+  const a = ACCENTS[t] ?? ACCENTS.primary;
   return (
-    <div className="stat-card">
-      <div className="flex items-start justify-between">
+    <div
+      className="kpi-card group"
+      style={{ ["--kpi-accent" as any]: a.color, ["--kpi-glow" as any]: a.glow }}
+    >
+      <div className="relative flex items-start justify-between">
         <p className="label-eyebrow">{label}</p>
-        <div className={`flex h-9 w-9 items-center justify-center rounded-lg border bg-gradient-to-br ${tone[t as keyof typeof tone]}`}>
-          <Icon className="h-4 w-4" />
+        <div className="kpi-icon transition-transform duration-300 group-hover:scale-110">
+          <Icon className="h-5 w-5" />
         </div>
       </div>
-      <p className={`mt-3 text-4xl font-extrabold tracking-tight ${
-        t==='danger'?'text-destructive':
-        t==='warning'?'text-warning':
-        t==='info'?'text-info':
-        t==='violet'?'text-[hsl(270_80%_75%)]':'text-primary'
-      }`}>
+      <p className={`relative mt-4 text-[2.6rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
+         style={{ textShadow: `0 0 24px ${a.glow}` }}>
         {value}
       </p>
-      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+      <p className="relative mt-2 text-xs text-muted-foreground">{hint}</p>
     </div>
   );
 }
