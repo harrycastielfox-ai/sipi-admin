@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { LayoutDashboard, FileText, Gavel, PlusCircle, Bell, ShieldCheck, LogOut, Shield, Activity, Plus } from "lucide-react";
+import { LayoutDashboard, FileText, Gavel, PlusCircle, Bell, ShieldCheck, LogOut, Shield } from "lucide-react";
 import { auth } from "@/lib/auth";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const items = [
@@ -78,17 +77,6 @@ export default function AppLayout() {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border/60 bg-background/80 px-6 backdrop-blur-sm">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Activity className="h-4 w-4 text-primary" />
-            <span>Painel Operacional · DT Itabela</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={() => nav("/novo-caso")} className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[var(--shadow-elegant)]">
-              <Plus className="mr-2 h-4 w-4" /> Novo Inquérito
-            </Button>
-          </div>
-        </header>
         <main className="flex-1 px-6 py-6">
           <Outlet />
         </main>
