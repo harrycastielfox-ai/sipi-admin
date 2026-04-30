@@ -27,16 +27,16 @@ function StatCard({ label, value, hint, icon: Icon, t }: any) {
       style={{ ["--kpi-accent" as any]: a.color, ["--kpi-glow" as any]: a.glow }}
     >
       <div className="relative flex items-center justify-between">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
         <div className="kpi-icon transition-transform duration-300 group-hover:scale-110">
-          <Icon className="h-3.5 w-3.5" />
+          <Icon className="h-4 w-4" />
         </div>
       </div>
-      <p className={`relative mt-2 text-[2.1rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
-         style={{ textShadow: `0 0 22px ${a.glow}` }}>
+      <p className={`relative mt-4 text-[2.6rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
+         style={{ textShadow: `0 0 24px ${a.glow}` }}>
         {value}
       </p>
-      <p className="relative mt-1.5 text-[11px] text-muted-foreground">{hint}</p>
+      <p className="relative mt-2 text-[11px] text-muted-foreground">{hint}</p>
     </div>
   );
 }
