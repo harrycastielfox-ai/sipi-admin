@@ -219,7 +219,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-7">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
         <StatCard t="primary" icon={FileText} label="Total" value={stats.total} hint="Procedimentos cadastrados" />
         <StatCard t="info" icon={Clock} label="Em andamento" value={stats.andamento} hint={`${Math.round((stats.andamento/Math.max(1,stats.total))*100)}% do total`} />
         <StatCard t="primary" icon={CheckCircle2} label="Concluídos" value={stats.concluidos} hint={`${(taxa).toFixed(2)}% taxa atual`} />
