@@ -263,7 +263,7 @@ export default function Dashboard() {
         {/* Pendências */}
         <div className="panel">
           <div className="flex items-center gap-2 pb-3">
-            <Bell className="h-4 w-4 text-warning" />
+            <AlertTriangle className="h-4 w-4 text-warning" />
             <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-warning">Pendências por categoria</h3>
           </div>
           <ul className="mt-2 space-y-0.5 text-sm">
@@ -328,31 +328,43 @@ export default function Dashboard() {
 
       {/* Donut Status + Donut Prioridade + Procedimentos por tipo */}
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="panel">
-          <h3 className="label-eyebrow text-primary border-b border-border pb-3">Por status de diligência</h3>
-          <div className="mt-4 grid grid-cols-2 items-center gap-3">
-            <div className="relative h-48">
+        <div className="panel group transition-all hover:border-primary/40 hover:shadow-[0_0_30px_-10px_hsl(var(--primary)/0.4)]">
+          <div className="flex items-center justify-between pb-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Por status de diligência</h3>
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+          </div>
+          <div className="grid grid-cols-2 items-center gap-3">
+            <div className="relative h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} stroke="none">
-                    {statusData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                  <defs>
+                    {statusData.map((d, i) => (
+                      <filter key={i} id={`glow-st-${i}`} x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                      </filter>
+                    ))}
+                  </defs>
+                  <Pie data={statusData} dataKey="value" nameKey="name" innerRadius={52} outerRadius={80} paddingAngle={2} stroke="hsl(var(--card))" strokeWidth={2}>
+                    {statusData.map((d, i) => <Cell key={i} fill={d.color} filter={`url(#glow-st-${i})`} />)}
                   </Pie>
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 10, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-extrabold">{statusTotal}</span>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</span>
+                <span className="text-3xl font-extrabold tracking-tight text-foreground" style={{ textShadow: "0 0 18px hsl(var(--primary)/0.5)" }}>{statusTotal}</span>
+                <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Total</span>
               </div>
             </div>
-            <ul className="space-y-1.5 text-xs">
+            <ul className="space-y-2 text-xs">
               {statusData.map(d => (
-                <li key={d.name} className="flex items-center justify-between gap-2">
+                <li key={d.name} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/40">
                   <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
-                    {d.name}
+                    <span className="h-2.5 w-2.5 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: d.color, color: d.color }} />
+                    <span className="font-medium text-foreground/90">{d.name}</span>
                   </span>
-                  <span className="font-semibold">
-                    {d.value} <span className="text-muted-foreground">({Math.round((d.value/Math.max(1,statusTotal))*100)}%)</span>
+                  <span className="font-bold tabular-nums text-foreground">
+                    {d.value} <span className="text-[10px] font-medium text-muted-foreground">({Math.round((d.value/Math.max(1,statusTotal))*100)}%)</span>
                   </span>
                 </li>
               ))}
@@ -360,31 +372,43 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="panel">
-          <h3 className="label-eyebrow text-primary border-b border-border pb-3">Por prioridade</h3>
-          <div className="mt-4 grid grid-cols-2 items-center gap-3">
-            <div className="relative h-48">
+        <div className="panel group transition-all hover:border-primary/40 hover:shadow-[0_0_30px_-10px_hsl(var(--primary)/0.4)]">
+          <div className="flex items-center justify-between pb-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Por prioridade</h3>
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+          </div>
+          <div className="grid grid-cols-2 items-center gap-3">
+            <div className="relative h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={prioData} dataKey="value" nameKey="name" innerRadius={45} outerRadius={75} stroke="none">
-                    {prioData.map((d, i) => <Cell key={i} fill={d.color} />)}
+                  <defs>
+                    {prioData.map((d, i) => (
+                      <filter key={i} id={`glow-pr-${i}`} x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+                      </filter>
+                    ))}
+                  </defs>
+                  <Pie data={prioData} dataKey="value" nameKey="name" innerRadius={52} outerRadius={80} paddingAngle={2} stroke="hsl(var(--card))" strokeWidth={2}>
+                    {prioData.map((d, i) => <Cell key={i} fill={d.color} filter={`url(#glow-pr-${i})`} />)}
                   </Pie>
+                  <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 10, fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-extrabold">{prioTotal}</span>
-                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Total</span>
+                <span className="text-3xl font-extrabold tracking-tight text-foreground" style={{ textShadow: "0 0 18px hsl(var(--primary)/0.5)" }}>{prioTotal}</span>
+                <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Total</span>
               </div>
             </div>
-            <ul className="space-y-1.5 text-xs">
+            <ul className="space-y-2 text-xs">
               {prioData.map(d => (
-                <li key={d.name} className="flex items-center justify-between gap-2">
+                <li key={d.name} className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/40">
                   <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full" style={{ background: d.color }} />
-                    {d.name}
+                    <span className="h-2.5 w-2.5 rounded-full shadow-[0_0_8px_currentColor]" style={{ background: d.color, color: d.color }} />
+                    <span className="font-medium text-foreground/90">{d.name}</span>
                   </span>
-                  <span className="font-semibold">
-                    {d.value} <span className="text-muted-foreground">({Math.round((d.value/Math.max(1,prioTotal))*100)}%)</span>
+                  <span className="font-bold tabular-nums text-foreground">
+                    {d.value} <span className="text-[10px] font-medium text-muted-foreground">({Math.round((d.value/Math.max(1,prioTotal))*100)}%)</span>
                   </span>
                 </li>
               ))}
@@ -392,23 +416,26 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="panel">
-          <h3 className="label-eyebrow text-primary border-b border-border pb-3">Procedimentos por tipo</h3>
-          <div className="mt-4 space-y-3">
+        <div className="panel group transition-all hover:border-primary/40 hover:shadow-[0_0_30px_-10px_hsl(var(--primary)/0.4)]">
+          <div className="flex items-center justify-between pb-3">
+            <h3 className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">Procedimentos por tipo</h3>
+            <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_hsl(var(--primary))]" />
+          </div>
+          <div className="space-y-3.5">
             {porTipo.map(({ t, n }) => (
-              <div key={t}>
-                <div className="mb-1 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-muted-foreground">{t}</span>
-                  <span className="font-bold">{n}</span>
+              <div key={t} className="group/row">
+                <div className="mb-1.5 flex items-center justify-between text-xs">
+                  <span className="font-bold tracking-wide text-foreground/90">{t}</span>
+                  <span className="font-extrabold tabular-nums text-primary">{n}</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-muted">
-                  <div className="h-full rounded-full bg-gradient-to-r from-primary to-primary-glow transition-all"
+                <div className="relative h-2.5 overflow-hidden rounded-full border border-border/60 bg-muted/40">
+                  <div className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary to-primary-glow shadow-[0_0_10px_hsl(var(--primary)/0.6)] transition-all duration-700"
                     style={{ width: `${(n/maxTipo)*100}%` }} />
                 </div>
               </div>
             ))}
-            <p className="pt-2 text-[11px] leading-relaxed text-muted-foreground">
-              IP: Inquéritos · APF: Flagrantes · TCO: Termos · BOC: Boletins · AIAI: Ato Infracional
+            <p className="pt-2 text-[10px] leading-relaxed text-muted-foreground">
+              <span className="font-bold text-foreground/70">IP:</span> Inquéritos · <span className="font-bold text-foreground/70">APF:</span> Flagrantes · <span className="font-bold text-foreground/70">TCO:</span> Termos · <span className="font-bold text-foreground/70">BOC:</span> Boletins · <span className="font-bold text-foreground/70">AIAI:</span> Ato Infracional
             </p>
           </div>
         </div>
