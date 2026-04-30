@@ -107,7 +107,7 @@
   }
   .kpi-card:hover::before { opacity: 1; }
   .kpi-icon {
-    @apply relative flex h-7 w-7 items-center justify-center rounded-md border;
+    @apply relative flex h-9 w-9 items-center justify-center rounded-lg border;
     background: color-mix(in oklab, var(--kpi-accent, hsl(var(--primary))) 14%, transparent);
     border-color: color-mix(in oklab, var(--kpi-accent, hsl(var(--primary))) 40%, transparent);
     color: var(--kpi-accent, hsl(var(--primary)));
