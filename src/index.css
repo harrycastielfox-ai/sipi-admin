@@ -74,16 +74,68 @@
 
 @layer components {
   .stat-card {
-    @apply relative overflow-hidden rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/40;
+    @apply relative overflow-hidden rounded-2xl border border-border bg-card p-5 transition-all duration-300 hover:-translate-y-0.5;
     background: var(--gradient-card);
     box-shadow: var(--shadow-card);
   }
   .panel {
-    @apply rounded-xl border border-border bg-card p-5;
+    @apply rounded-2xl border border-border bg-card p-5;
     background: var(--gradient-card);
     box-shadow: var(--shadow-card);
   }
   .label-eyebrow {
     @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground;
   }
+  .kpi-card {
+    @apply relative overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-300 hover:-translate-y-1;
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+  }
+  .kpi-card::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(120% 80% at 100% 0%, var(--kpi-glow, transparent), transparent 55%);
+    opacity: .9; pointer-events: none;
+  }
+  .kpi-card::after {
+    content: "";
+    position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--kpi-accent, hsl(var(--primary)));
+    box-shadow: 0 0 18px var(--kpi-accent, hsl(var(--primary)));
+    opacity: .85;
+  }
+  .kpi-card:hover {
+    box-shadow: 0 18px 50px -18px var(--kpi-accent, hsl(var(--primary) / .5));
+    border-color: var(--kpi-accent, hsl(var(--primary)));
+  }
+  .kpi-icon {
+    @apply relative flex h-11 w-11 items-center justify-center rounded-xl border;
+    background: color-mix(in oklab, var(--kpi-accent, hsl(var(--primary))) 14%, transparent);
+    border-color: color-mix(in oklab, var(--kpi-accent, hsl(var(--primary))) 40%, transparent);
+    color: var(--kpi-accent, hsl(var(--primary)));
+  }
+  .kpi-icon::after {
+    content: ""; position: absolute; inset: -8px; border-radius: 9999px;
+    background: var(--kpi-accent, hsl(var(--primary)));
+    filter: blur(18px); opacity: .25; z-index: -1;
+  }
+  .progress-shimmer {
+    background-image: linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(var(--primary-glow)) 50%, hsl(var(--primary)) 100%);
+    background-size: 200% 100%;
+    animation: progress-shimmer 2.4s linear infinite;
+  }
+  .header-accent {
+    @apply relative pl-3;
+  }
+  .header-accent::before {
+    content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 3px;
+    border-radius: 9999px;
+    background: linear-gradient(180deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    box-shadow: 0 0 12px hsl(var(--primary) / .6);
+  }
+}
+
+@keyframes progress-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
