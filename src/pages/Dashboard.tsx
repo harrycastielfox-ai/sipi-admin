@@ -27,16 +27,16 @@ function StatCard({ label, value, hint, icon: Icon, t }: any) {
       style={{ ["--kpi-accent" as any]: a.color, ["--kpi-glow" as any]: a.glow }}
     >
       <div className="relative flex items-center justify-between">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
         <div className="kpi-icon transition-transform duration-300 group-hover:scale-110">
-          <Icon className="h-4 w-4" />
+          <Icon className="h-3.5 w-3.5" />
         </div>
       </div>
-      <p className={`relative mt-3 text-[3rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
-         style={{ textShadow: `0 0 28px ${a.glow}` }}>
+      <p className={`relative mt-2 text-[2.1rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
+         style={{ textShadow: `0 0 22px ${a.glow}` }}>
         {value}
       </p>
-      <p className="relative mt-2.5 text-[11px] text-muted-foreground">{hint}</p>
+      <p className="relative mt-1.5 text-[11px] text-muted-foreground">{hint}</p>
     </div>
   );
 }
@@ -185,16 +185,16 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header — sem container, igual referência */}
-      <div className="flex flex-wrap items-end justify-between gap-3 px-1 pt-1">
-        <div>
-          <div className="flex items-center gap-3">
-            <Activity className="h-7 w-7 text-primary drop-shadow-[0_0_12px_hsl(var(--primary)/0.7)]" />
-            <h1 className="text-[2.4rem] font-extrabold leading-none tracking-tight text-foreground">
+      {/* Header */}
+      <div className="flex flex-wrap items-end justify-between gap-3 rounded-2xl border border-border/70 bg-card/40 p-5 backdrop-blur-sm">
+        <div className="header-accent">
+          <div className="flex items-center gap-2.5">
+            <Activity className="h-6 w-6 text-primary drop-shadow-[0_0_10px_hsl(var(--primary)/0.6)]" />
+            <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
               Painel de Controle
             </h1>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Delegacia Territorial de Itabela — 23ª COORPIN — atualizado em {dt} às {tm}
           </p>
         </div>
