@@ -26,17 +26,17 @@ function StatCard({ label, value, hint, icon: Icon, t }: any) {
       className="kpi-card group"
       style={{ ["--kpi-accent" as any]: a.color, ["--kpi-glow" as any]: a.glow }}
     >
-      <div className="relative flex items-start justify-between">
-        <p className="label-eyebrow">{label}</p>
+      <div className="relative flex items-center justify-between">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
         <div className="kpi-icon transition-transform duration-300 group-hover:scale-110">
-          <Icon className="h-5 w-5" />
+          <Icon className="h-3.5 w-3.5" />
         </div>
       </div>
-      <p className={`relative mt-4 text-[2.6rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
-         style={{ textShadow: `0 0 24px ${a.glow}` }}>
+      <p className={`relative mt-2 text-[2.1rem] font-extrabold leading-none tracking-tight tabular-nums ${a.text}`}
+         style={{ textShadow: `0 0 22px ${a.glow}` }}>
         {value}
       </p>
-      <p className="relative mt-2 text-xs text-muted-foreground">{hint}</p>
+      <p className="relative mt-1.5 text-[11px] text-muted-foreground">{hint}</p>
     </div>
   );
 }
@@ -298,12 +298,12 @@ export default function Dashboard() {
               ["IP de Violência Doméstica sem relatar", vdPend, COLORS.warning],
               ["APF não relatados", apfPend, COLORS.warning],
             ].sort((a:any,b:any)=>b[1]-a[1]).map(([l, n, c]: any, idx:number) => (
-              <li key={l} className={`flex items-center justify-between rounded-lg border px-3 py-3 ${idx===0 ? "border-warning/45 bg-warning/10" : "border-border/60 bg-background/40"}`}>
+              <li key={l} className="flex items-center justify-between rounded-md px-2 py-2 text-muted-foreground transition-colors hover:bg-warning/5">
                 <span className="flex items-center gap-2.5">
-                  <span className={`rounded-full ${idx===0 ? "h-2 w-2 shadow-[0_0_10px_hsl(var(--warning))]" : "h-1.5 w-1.5"}`} style={{ background: c }} />
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ background: COLORS.warning }} />
                   {l}
                 </span>
-                <span className={`min-w-9 rounded px-2 py-0.5 text-right font-extrabold tabular-nums ${idx===0 ? "bg-warning/20 text-warning" : "text-warning"}`}>{n}</span>
+                <span className="font-extrabold tabular-nums text-warning">{n}</span>
               </li>
             ))}
           </ul>
