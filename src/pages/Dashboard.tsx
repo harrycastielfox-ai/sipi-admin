@@ -186,25 +186,33 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <Activity className="h-6 w-6 text-primary" />
-            <h1 className="text-3xl font-extrabold tracking-tight">Painel de Controle</h1>
+      <div className="flex flex-wrap items-end justify-between gap-3 rounded-2xl border border-border/70 bg-card/40 p-5 backdrop-blur-sm">
+        <div className="header-accent">
+          <div className="flex items-center gap-2.5">
+            <Activity className="h-6 w-6 text-primary drop-shadow-[0_0_10px_hsl(var(--primary)/0.6)]" />
+            <h1 className="bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-3xl font-extrabold tracking-tight text-transparent">
+              Painel de Controle
+            </h1>
           </div>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Delegacia Territorial de Itabela — 23ª COORPIN — atualizado em {dt} às {tm}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link to="/novo-caso" className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-elegant transition hover:brightness-110">
-            <Plus className="h-4 w-4" /> Novo Inquérito
+          <Link
+            to="/novo-caso"
+            className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-primary to-primary-glow px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.7)] ring-1 ring-primary/30 transition-all hover:scale-[1.02] hover:shadow-[0_12px_32px_-8px_hsl(var(--primary)/0.9)] active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4 transition-transform group-hover:rotate-90" /> Novo Inquérito
           </Link>
-          <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:border-primary/40">
+          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-card/70 px-4 py-2.5 text-sm font-semibold text-foreground backdrop-blur-sm transition-all hover:scale-[1.02] hover:border-primary/50 hover:bg-card active:scale-[0.98]">
             <Filter className="h-4 w-4" /> Filtros Rápidos
           </button>
-          <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2.5 text-xs text-muted-foreground">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-primary" />
+          <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-card/60 px-3 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
             Atualizado: {dt}, {tm}
           </div>
         </div>
